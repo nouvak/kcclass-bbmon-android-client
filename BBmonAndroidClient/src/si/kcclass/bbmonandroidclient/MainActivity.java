@@ -1,90 +1,46 @@
 package si.kcclass.bbmonandroidclient;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.app.Activity;
-import android.os.AsyncTask;
-import android.os.Build;
+import si.kcclass.bbmonandroidclient.fragments.ObservableDetailsFragment;
+import si.kcclass.bbmonandroidclient.fragments.ObservablesListFragment;
+import si.kcclass.bbmonandroidclient.fragments.ObservablesListFragment.OnObservableSelectedListener;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity
+	implements OnObservableSelectedListener {
 	
 	private static final String TAG = "MainActivity";
-	
-	private class DownloadObservablesList extends AsyncTask<String, Void, JSONArray> {
-
-		@Override
-		protected JSONArray doInBackground(String... urls) {
-			return downloadServersList(urls[0]);
-		}
-		
-		private JSONArray downloadServersList(String url) {
-			try {
-				DefaultHttpClient httpClient = new DefaultHttpClient(
-						new BasicHttpParams());
-				HttpGet httpGetRequest = new HttpGet(url);
-				HttpResponse httpResponse = httpClient.execute(httpGetRequest);
-			    BufferedReader reader = new BufferedReader(new InputStreamReader(
-			    		httpResponse.getEntity().getContent(), "UTF-8"));
-			    String json = reader.readLine();
-			    JSONArray serverList = new JSONArray(json);
-			    return serverList;
-			} catch (Exception e) {
-				Log.e(TAG, "Downloading server list failed.", e);
-				return null;
-			}
-		}
-		
-        @Override
-        protected void onPostExecute(JSONArray result) {
-            setContentView(R.layout.activity_main);
-            // We need to use a different list item layout for devices older than Honeycomb
-            int layout = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
-                    android.R.layout.simple_list_item_activated_1 : android.R.layout.simple_list_item_1;
-            
-            List<String> observables = new ArrayList<String>();
-            for (int i=0; i<result.length(); i++) {
-				try {
-					JSONObject jsonObj;
-					jsonObj = result.getJSONObject(i);
-					observables.add(jsonObj.getString("name"));
-				} catch (JSONException e) {
-					Log.e(TAG, "Error adding json object to the observables list.", e);
-				}
-            }
-            
-            ListView observablesListView = (ListView)findViewById(R.id.observable_list);
-            observablesListView.setAdapter(new ArrayAdapter<String>(MainActivity.this, 
-            		layout, observables));
-
-        }
-	}
-		
-    private void loadServerList() {
-    	new DownloadObservablesList().execute(
-    			"http://bbmonserver.cloudfoundry.com/server-instances");
-    }
-
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+        // Check whether the activity is using the layout version with
+        // the fragment_container FrameLayout. If so, we must add the first fragment
+        if (findViewById(R.id.fragment_container) != null) {
+
+            // However, if we're being restored from a previous state,
+            // then we don't need to do anything and should return or else
+            // we could end up with overlapping fragments.
+            if (savedInstanceState != null) {
+                return;
+            }
+
+            // Create an instance of ExampleFragment
+            ObservablesListFragment firstFragment = new ObservablesListFragment();
+
+            // In case this activity was started with special instructions from an Intent,
+            // pass the Intent's extras to the fragment as arguments
+            firstFragment.setArguments(getIntent().getExtras());
+
+            // Add the fragment to the 'fragment_container' FrameLayout
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, firstFragment).commit();
+        }
+
 	}
 
 	@Override
@@ -97,7 +53,40 @@ public class MainActivity extends Activity {
     @Override
     public void onStart() {
         super.onStart();
-        loadServerList();
     }
+
+	@Override
+	public void onObservableSelected(int position) {
+        // The user selected the headline of an article from the HeadlinesFragment
+
+        // Capture the article fragment from the activity layout
+        ObservableDetailsFragment observableDetailsFrag = (ObservableDetailsFragment)
+                getSupportFragmentManager().findFragmentById(R.id.observable_details_fragment);
+
+        if (observableDetailsFrag != null) {
+            // If article frag is available, we're in two-pane layout...
+
+            // Call a method in the ArticleFragment to update its content
+            observableDetailsFrag.updateObservableDetailsView(position);
+
+        } else {
+            // If the frag is not available, we're in the one-pane layout and must swap frags...
+
+            // Create fragment and give it an argument for the selected article
+            ObservableDetailsFragment newFragment = new ObservableDetailsFragment();
+            Bundle args = new Bundle();
+            args.putInt(ObservableDetailsFragment.ARG_POSITION, position);
+            newFragment.setArguments(args);
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+            // Replace whatever is in the fragment_container view with this fragment,
+            // and add the transaction to the back stack so the user can navigate back
+            transaction.replace(R.id.fragment_container, newFragment);
+            transaction.addToBackStack(null);
+
+            // Commit the transaction
+            transaction.commit();
+        }		
+	}
 
 }
