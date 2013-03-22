@@ -11,10 +11,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import si.kcclass.bbmonandroidclient.R;
-
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -71,9 +69,11 @@ public class ObservablesListFragment extends ListFragment {
             List<String> observables = new ArrayList<String>();
             for (int i=0; i<result.length(); i++) {
 				try {
-					JSONObject jsonObj;
+					/*JSONObject jsonObj;
 					jsonObj = result.getJSONObject(i);
-					observables.add(jsonObj.getString("name"));
+					observables.add(jsonObj.getString("name"));*/					
+					observables.add(result.getString(i));
+
 				} catch (JSONException e) {
 					Log.e(TAG, "Error adding json object to the observables list.", e);
 				}
@@ -85,8 +85,10 @@ public class ObservablesListFragment extends ListFragment {
 	}
 		
     private void loadObservablesList() {
+    	//new DownloadObservablesList().execute(
+    	//		"http://bbmonserver.cloudfoundry.com/server-instances");
     	new DownloadObservablesList().execute(
-    			"http://bbmonserver.cloudfoundry.com/server-instances");
+    			"http://kcclass-bbmon-server.cloudfoundry.com/server-instances");
     }
         
     @Override
