@@ -1,5 +1,8 @@
 package si.kcclass.bbmonandroidclient.domain;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.gson.annotations.SerializedName;
 
 public class MonitoringSystem {
@@ -24,6 +27,11 @@ public class MonitoringSystem {
 		this.name = name;
 	}
 	
-	
+	public Map<String, String> toMap() {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("id", id.toString());
+		map.put("name", name);
+		return map;
+	}
 
 }
