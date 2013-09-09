@@ -5,9 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import si.kcclass.bbmonandroidclient.domain.Customer;
-import si.kcclass.bbmonandroidclient.domain.MonitoringSystem;
-import si.kcclass.bbmonandroidclient.rest.clients.CustomerClient;
+import si.kcclass.bbmonandroidclient.domain.Device;
+import si.kcclass.bbmonandroidclient.rest.clients.DeviceClient;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -20,53 +19,56 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class CustomerActivity extends ListActivity {
+public class DeviceActivity extends ListActivity {
 
-	private class LoadCustomerDataTask extends
-			AsyncTask<String, Void, List<Customer>> {
-		
+	private class LoadDeviceDataTask extends
+			AsyncTask<String, Void, List<Device>> {
+
 		@Override
-		protected List<Customer> doInBackground(String... params) {
+		protected List<Device> doInBackground(String... params) {
 			String monSysId = params[0];
-			CustomerClient restClient = new CustomerClient();
+			String customerId = params[1];
+			DeviceClient restClient = new DeviceClient();
 			Map<String, String> requestProperties = new HashMap<String, String>();
 			Map<String, String> arguments = new HashMap<String, String>();
 			arguments.put("monSysId", monSysId);
-			List<Customer> data = new ArrayList<Customer>();
+			arguments.put("monSysCustomer", customerId);
+			List<Device> data = new ArrayList<Device>();
 			try {
-				data = restClient.invokeService("/devices/getMonSysCustomer",
-						arguments,
-						requestProperties);
+				data = restClient.invokeService("/devices/getDev",
+						arguments, requestProperties);
 			} catch (Exception e) {
 				Log.e(LOG_TAG,
 						"The loading of the customer data failed: "
 								+ e.getMessage(), e);
 				Toast.makeText(
-						CustomerActivity.this,
-						"The loading of the customer data failed: "
+						DeviceActivity.this,
+						"The loading of the device data failed: "
 								+ e.getMessage(), Toast.LENGTH_LONG).show();
 			}
 			return data;
 		}
 
 		@Override
-		protected void onPostExecute(List<Customer> data) {
-			mCustomerData = data;
+		protected void onPostExecute(List<Device> data) {
+			mDeviceData = data;
 			List<String> listNames = new ArrayList<String>();
-			for (Customer customer : data) {
-				listNames.add(customer.getId().toString());
+			for (Device device : data) {
+				listNames.add(device.getName());
 			}
-			ListAdapter adapter = new ArrayAdapter<String>(CustomerActivity.this,
-					android.R.layout.simple_list_item_1, listNames);
+			ListAdapter adapter = new ArrayAdapter<String>(
+					DeviceActivity.this, android.R.layout.simple_list_item_1,
+					listNames);
 			setListAdapter(adapter);
 		}
 
 	}
 
-	private static final String LOG_TAG = CustomerActivity.class.getName();
-
-	private long monSysId;
-	private List<Customer> mCustomerData;
+	private static final String LOG_TAG = DeviceActivity.class.getName();
+	
+	long monSysId;
+	long customerId;
+	private List<Device> mDeviceData;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +77,8 @@ public class CustomerActivity extends ListActivity {
 		
 		Bundle b = getIntent().getExtras();
 		monSysId = b.getLong("monSysId");
-		loadCustomer();
+		customerId = b.getLong("customerId");
+		loadDevice();
 		ListView listview = (ListView) findViewById(android.R.id.list);
 		listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -88,17 +91,20 @@ public class CustomerActivity extends ListActivity {
 		});
 	}
 
-	private void loadCustomer() {
-		new LoadCustomerDataTask().execute(Long.toString(monSysId));
+	private void loadDevice() {
+		new LoadDeviceDataTask().execute(Long.toString(monSysId),
+				Long.toString(customerId));
 	}
 
 	private void itemClicked(int position) {
-		Customer customer = mCustomerData.get(position);
-		Intent intent = new Intent(this, DeviceActivity.class);
+		Device device = mDeviceData.get(position);
+		Intent intent = new Intent(this, MetricsForDeviceActivity.class);
 		Bundle b = new Bundle();
 		b.putLong("monSysId", monSysId);
-		b.putLong("customerId", customer.getId());
+		b.putLong("customerId", customerId);
+		b.putLong("deviceId", device.getId());
 		intent.putExtras(b);
 		startActivity(intent);
 	}
+
 }

@@ -96,8 +96,8 @@ public class MainActivity extends ListActivity {
 		MonitoringSystem monSys = mMonSystemData.get(position);
 		Intent intent = new Intent(this, CustomerActivity.class);
 		Bundle b = new Bundle();
-		b.putLong("monSysId", monSys.getId()); //Your id
-		intent.putExtras(b); //Put your id to your next Intent
+		b.putLong("monSysId", monSys.getId());
+		intent.putExtras(b);
 		startActivity(intent);
 	}
 

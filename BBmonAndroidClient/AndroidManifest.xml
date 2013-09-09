@@ -26,6 +26,7 @@
             </intent-filter>
         </activity>
         <activity android:name="si.kcclass.bbmonandroidclient.CustomerActivity" />
+        <activity android:name="si.kcclass.bbmonandroidclient.DeviceActivity" />
 
     </application>
 
