@@ -7,6 +7,8 @@ public class Metric {
 	private Long id;
 	@SerializedName("met_name")
 	private String name;
+	@SerializedName("color")
+	private String color;
 	
 	public Long getId() {
 		return id;
@@ -19,5 +21,11 @@ public class Metric {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getColor() {
+		return color;
+	}
+	public void setColor(String color) {
+		this.color = color;
 	}
 }

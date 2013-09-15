@@ -18,15 +18,19 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="si.kcclass.bbmonandroidclient.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/mon_sys" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="si.kcclass.bbmonandroidclient.CustomerActivity" />
-        <activity android:name="si.kcclass.bbmonandroidclient.DeviceActivity" />
+        <activity android:name="si.kcclass.bbmonandroidclient.CustomerActivity"
+            android:label="@string/customer" />
+        <activity android:name="si.kcclass.bbmonandroidclient.DeviceActivity"
+            android:label="@string/device" />
+        <activity android:name="si.kcclass.bbmonandroidclient.MetricsForDeviceActivity"
+            android:label="@string/metric" />
 
     </application>
 

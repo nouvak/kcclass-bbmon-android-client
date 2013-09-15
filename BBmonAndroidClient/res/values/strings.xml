@@ -4,5 +4,9 @@
     <string name="app_name">BBmonAndroidClient</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
+    <string name="mon_sys">Monitoring systems</string>
+    <string name="customer">Customers</string>
+    <string name="device">Devices</string>
+    <string name="metric">Metrics</string>
 
 </resources>
