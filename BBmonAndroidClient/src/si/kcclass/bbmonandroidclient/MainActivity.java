@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -69,7 +68,6 @@ public class MainActivity extends ListActivity {
 		setContentView(R.layout.activity_main);
 		loadMonitoringSystem();
 		ListView listview = (ListView) findViewById(android.R.id.list);
-		// listview.se
 		listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 			@Override
@@ -79,13 +77,6 @@ public class MainActivity extends ListActivity {
 			}
 			
 		});
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_main, menu);
-		return true;
 	}
 
 	private void loadMonitoringSystem() {

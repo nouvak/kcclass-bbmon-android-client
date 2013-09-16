@@ -73,7 +73,7 @@ public class DeviceActivity extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_customer);
+		setContentView(R.layout.activity_device);
 		
 		Bundle b = getIntent().getExtras();
 		monSysId = b.getLong("monSysId");
